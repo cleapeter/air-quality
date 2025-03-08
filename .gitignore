@@ -1,0 +1,9 @@
+*.txt 
+*.sh
+Overview.md
+
+# Folders
+archive/
+data/
+models/
+__pycache__
