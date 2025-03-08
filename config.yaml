@@ -2,3 +2,15 @@ data:
   raw_path: "data/raw/AirQuality.csv"
   clean_path: "data/processed/AirQuality_cleaned.csv"
   target_column: "CO_reference_mg_per_m3"
+
+models:
+  linear_regression:
+    fit_intercept: true
+  random_forest_regressor:
+    n_estimators: 300  # More trees improve stability
+    max_depth: 10  # Limits tree depth to prevent overfitting
+    min_samples_split: 5  # Minimum samples to split an internal node
+    min_samples_leaf: 2  # Minimum samples per leaf node
+    max_features: "sqrt"  # Reduces overfitting by limiting feature use per split
+    bootstrap: true  # Uses bootstrapping for variance reduction
+    random_state: 42  # Ensures reproducibility

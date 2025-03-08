@@ -1,16 +1,20 @@
 import joblib
 from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 
 
-def train_model(X, y):
-    # Drop columns not used for training
-    X = X.drop(columns=["Timestamp"])
+def train_model(X, y, model_name, model_params):
+    if model_name == "linear_regression":
+        model = LinearRegression(**model_params)
+    elif model_name == "random_forest_regressor":
+        model = RandomForestRegressor(**model_params)
+    else:
+        raise ValueError(f"Unsupported model: {model_name}")
 
-    # Initialize and train the model
-    model = LinearRegression()
     model.fit(X, y)
 
     # Save the model
-    joblib.dump(model, "models/linear_regression.pkl")
+    model_path = f"models/{model_name}.pkl"
+    joblib.dump(model, model_path)
 
     return model

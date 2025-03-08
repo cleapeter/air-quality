@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 
 def load_data(config):
     df = pd.read_csv(config["data"]["clean_path"])
+    df.set_index("Timestamp", inplace=True)
     return df
 
 
@@ -14,7 +15,7 @@ def preprocess_data(df, target_column):
     scaler = StandardScaler()
 
     # Ignore target and time columns
-    cols_to_scale = [col for col in df.columns if col not in [target_column, "Timestamp", "Hour", "DayOfWeek", "Month"]]
+    cols_to_scale = [col for col in df.columns if col not in [target_column, "Hour", "DayOfWeek", "Month"]]
 
     # Standardize numerical columns
     df[cols_to_scale] = scaler.fit_transform(df[cols_to_scale])
