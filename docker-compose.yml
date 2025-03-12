@@ -1,0 +1,16 @@
+services:
+  air-quality:
+    container_name: air-quality
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "127.0.0.1:5000:5000" # restrict access only to localhost
+    volumes:
+      - .:/app
+    command: sleep infinity
+    # command: >
+    #   bash -c "
+    #     mlflow server --host 127.0.0.1 --port 5000 &
+    #     python pipeline.py
+    #   "

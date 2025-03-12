@@ -1,0 +1,11 @@
+# Git
+.git
+.gitignore
+
+# Docker
+docker/
+docker-compose.yml
+
+# Others
+archive/
+
