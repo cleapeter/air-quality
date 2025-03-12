@@ -1,4 +1,4 @@
-name: Python Linting with pre-commit
+name: CI
 
 on:
   push:
@@ -33,3 +33,18 @@ jobs:
       - name: Run pre-commit hooks
         run: |
           pre-commit run --all-files
+
+  docker-build:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Test Docker Build
+        run: |
+          docker build -t test-image .
+          docker image rm test-image
