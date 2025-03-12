@@ -1,6 +1,6 @@
 import joblib
-from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
 
 
 def train_model(X, y, model_name, model_params):

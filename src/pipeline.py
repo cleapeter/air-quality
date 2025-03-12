@@ -1,10 +1,11 @@
 import mlflow
 import pandas as pd
-from data_preprocessing import load_data, preprocess_data, split_data
-from train import train_model
-from evaluate import evaluate_model
-from config import load_config
 from mlflow.models import infer_signature
+
+from config import load_config
+from data_preprocessing import load_data, preprocess_data, split_data
+from evaluate import evaluate_model
+from train import train_model
 
 mlflow.set_tracking_uri("http://localhost:5000")
 mlflow.set_experiment("Air Quality: Random Forest Regressor")
@@ -47,6 +48,7 @@ def run_pipeline():
         mlflow.sklearn.log_model(model, "model", signature=signature, input_example=input_example)
 
         print("Pipeline has finished!")
+
 
 if __name__ == "__main__":
     run_pipeline()
