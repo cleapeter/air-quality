@@ -46,5 +46,5 @@ jobs:
 
       - name: Test Docker Build
         run: |
-          docker build -t test-image ./docker
+          docker build -t test-image -f ./docker/Dockerfile .
           docker image rm test-image
