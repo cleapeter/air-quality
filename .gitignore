@@ -6,3 +6,4 @@ mlruns/
 models/
 notes/
 __pycache__
+.pytest_cache

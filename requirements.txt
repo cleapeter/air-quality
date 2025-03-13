@@ -1,5 +1,6 @@
 joblib
 mlflow
 pandas
+pytest
 PyYAML
 scikit-learn
