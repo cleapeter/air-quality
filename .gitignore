@@ -1,11 +1,8 @@
-*.txt
-*.sh
-Overview.md
-
 # Folders
 archive/
 data/
 mlartifacts/
 mlruns/
 models/
+notes/
 __pycache__
