@@ -5,6 +5,6 @@ WORKDIR /app
 COPY . /app
 
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+    pip install -r /app/requirements.txt
 
 CMD ["python", "src/pipeline.py"]
