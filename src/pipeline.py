@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 # Setup MLflow
 mlflow.set_tracking_uri("http://localhost:5000")
-mlflow.set_experiment("Air Quality: Random Forest Regressor")
+mlflow.set_experiment("Air Quality")
 
 
 def run_pipeline():
@@ -36,29 +36,26 @@ def run_pipeline():
         logger.info("Pipeline started.")
 
         logger.info("Loading configuration...")
-        config, target_column = load_config()
-
-        model_name = "random_forest_regressor"
+        config, target_column, model_name = load_config()
 
         with mlflow.start_run():
             mlflow.log_param("target_column", target_column)
+            mlflow.log_param("model", model_name)
 
-            # Load data
-            print("Loading data")
+            logger.info("Loading data...")
             df = load_data(config)
 
-            # Process data
-            print("Processing data")
+            logger.info("Processing and splitting data...")
             df_scaled, df_target = preprocess_data(df, target_column)
             X_train, X_test, y_train, y_test = split_data(df_scaled, df_target, target_column)
 
-            # Train and evaluate model
-            print("Training model")
+            logger.info("Training model...")
             model_params = config["models"][model_name]
-            model = train_model(X_train, y_train, model_name, model_params)
-            print("Evaluating model")
-            metrics = evaluate_model(X_test, y_test, model)
             mlflow.log_params(model_params)
+            model = train_model(X_train, y_train, model_name, model_params)
+
+            logger.info("Evaluating model...")
+            metrics = evaluate_model(X_test, y_test, model)
             mlflow.log_metrics(metrics)
 
             input_example = pd.DataFrame(X_train.iloc[:1])

@@ -1,6 +1,7 @@
 # Folders
 archive/
 data/
+logs/
 mlartifacts/
 mlruns/
 models/
