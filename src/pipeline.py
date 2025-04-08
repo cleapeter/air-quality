@@ -6,7 +6,7 @@ import mlflow
 import pandas as pd
 from mlflow.models import infer_signature
 
-from config import load_config
+from config_loader import load_config
 from data_preprocessing import load_data, preprocess_data, split_data
 from evaluate import evaluate_model
 from train import train_model
