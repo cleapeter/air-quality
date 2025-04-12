@@ -3,7 +3,6 @@ import os
 
 import joblib
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 logger = logging.getLogger(__name__)
@@ -24,50 +23,74 @@ def load_data(config):
         raise
 
 
-def preprocess_data(df, target_column):
+def split_data(data, target_column, train_size=0.7, val_size=0.15):
     try:
-        logger.info("Preprocessing data, scaling and creating dummies...")
+        logger.info(f"Splitting data into training, validation, and test sets with target column {target_column}...")
+        total_size = len(data)
+        train_end = int(total_size * train_size)
+        val_end = train_end + int(total_size * val_size)
+
+        train_data = data.iloc[:train_end]
+        val_data = data.iloc[train_end:val_end]
+        test_data = data.iloc[val_end:]
+
+        X_train = train_data.drop(columns=[target_column])
+        y_train = train_data[target_column]
+        X_val = val_data.drop(columns=[target_column])
+        y_val = val_data[target_column]
+        X_test = test_data.drop(columns=[target_column])
+        y_test = test_data[target_column]
+
+        logger.info("Data split successfully.")
+        return X_train, X_val, X_test, y_train, y_val, y_test
+    except Exception as e:
+        logger.error(f"Error during data splitting: {e}")
+        raise
+
+
+def standardize_data(X_train, X_val, X_test):
+    try:
+        logger.info("Standardizing the data...")
         scaler = StandardScaler()
 
-        # Ignore target and time columns
-        cols_to_scale = [col for col in df.columns if col not in [target_column, "Hour", "DayOfWeek", "Month"]]
+        columns_to_standardize = [col for col in X_train.columns if col not in ["Hour", "DayOfWeek", "Month"]]
+        X_train[columns_to_standardize] = scaler.fit_transform(X_train[columns_to_standardize])
+        X_val[columns_to_standardize] = scaler.transform(X_val[columns_to_standardize])
+        X_test[columns_to_standardize] = scaler.transform(X_test[columns_to_standardize])
 
-        # Standardize numerical columns
-        df[cols_to_scale] = scaler.fit_transform(df[cols_to_scale])
-
-        # Create dummies for time columns
-        df = pd.get_dummies(df, columns=["Hour", "DayOfWeek", "Month"])
-
+        # Save the scaler
         os.makedirs("./models", exist_ok=True)
         joblib.dump(scaler, "models/scaler.pkl")
 
-        logger.info("Data preprocessing completed successfully.")
-        return df.drop(columns=[target_column]), df[target_column]
-    except KeyError as e:
-        logger.error(f"Key error during preprocessing: {e}")
+        logger.info("Data standardized successfully.")
+        return X_train, X_val, X_test
+    except Exception as e:
+        logger.error(f"Error during data standardization: {e}")
         raise
+
+
+def create_time_dummies(X_train, X_val, X_test):
+    try:
+        logger.info("Creating dummy variables for time-related columns...")
+        time_columns = ["Hour", "DayOfWeek", "Month"]
+        X_train = pd.get_dummies(X_train, columns=time_columns)
+        X_val = pd.get_dummies(X_val, columns=time_columns)
+        X_test = pd.get_dummies(X_test, columns=time_columns)
+
+        logger.info("Dummy variables created successfully.")
+        return X_train, X_val, X_test
+    except Exception as e:
+        logger.error(f"Error during creation of dummy variables: {e}")
+        raise
+
+
+def preprocess_data(X_train, X_val, X_test):
+    try:
+        logger.info("Preprocessing data...")
+        X_train, X_val, X_test = standardize_data(X_train, X_val, X_test)
+        X_train, X_val, X_test = create_time_dummies(X_train, X_val, X_test)
+        logger.info("Data preprocessed successfully.")
+        return X_train, X_val, X_test
     except Exception as e:
         logger.error(f"Error during data preprocessing: {e}")
-        raise
-
-
-def split_data(X, y, target_name, test_size=0.2, random_state=42):
-    try:
-        logger.info(f"Splitting data into training and testing sets for target: {target_name}...")
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
-
-        # Define target-specific subfolder
-        output_dir = f"data/processed/split/{target_name}"
-        os.makedirs(output_dir, exist_ok=True)
-
-        # Save split data
-        X_train.to_csv(f"{output_dir}/X_train.csv", index=False)
-        X_test.to_csv(f"{output_dir}/X_test.csv", index=False)
-        y_train.to_csv(f"{output_dir}/y_train.csv", index=False)
-        y_test.to_csv(f"{output_dir}/y_test.csv", index=False)
-
-        logger.info("Data split successfully.")
-        return X_train, X_test, y_train, y_test
-    except Exception as e:
-        logger.error(f"Error during data splitting: {e}")
         raise
