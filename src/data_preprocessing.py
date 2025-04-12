@@ -3,7 +3,7 @@ import os
 
 import joblib
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 logger = logging.getLogger(__name__)
 
@@ -73,9 +73,28 @@ def create_time_dummies(X_train, X_val, X_test):
     try:
         logger.info("Creating dummy variables for time-related columns...")
         time_columns = ["Hour", "DayOfWeek", "Month"]
-        X_train = pd.get_dummies(X_train, columns=time_columns)
-        X_val = pd.get_dummies(X_val, columns=time_columns)
-        X_test = pd.get_dummies(X_test, columns=time_columns)
+        encoder = OneHotEncoder(handle_unknown="ignore", drop="first", sparse_output=False)
+
+        # Fit the encoder on the training data and transform all datasets
+        X_train_encoded = encoder.fit_transform(X_train[time_columns])
+        X_val_encoded = encoder.transform(X_val[time_columns])
+        X_test_encoded = encoder.transform(X_test[time_columns])
+
+        # Get the names of the encoded columns
+        encoded_cols = encoder.get_feature_names_out(time_columns)
+
+        # Assign the encoded columns directly to the DataFrames
+        X_train[encoded_cols] = X_train_encoded
+        X_val[encoded_cols] = X_val_encoded
+        X_test[encoded_cols] = X_test_encoded
+
+        # Drop the original time-related columns
+        X_train.drop(columns=time_columns, inplace=True)
+        X_val.drop(columns=time_columns, inplace=True)
+        X_test.drop(columns=time_columns, inplace=True)
+
+        logger.info(f"Columns of X_train after encoding: {X_train.columns.tolist()}")
+        logger.info(f"First row of X_train after encoding: {X_train.iloc[0].to_dict()}")
 
         logger.info("Dummy variables created successfully.")
         return X_train, X_val, X_test
