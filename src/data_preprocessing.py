@@ -41,8 +41,10 @@ def split_data(data, target_column, train_size=0.7, val_size=0.15):
         X_test = test_data.drop(columns=[target_column])
         y_test = test_data[target_column]
 
+        timestamps = {"train": train_data.index, "val": val_data.index, "test": test_data.index}
+
         logger.info("Data split successfully.")
-        return X_train, X_val, X_test, y_train, y_val, y_test
+        return X_train, X_val, X_test, y_train, y_val, y_test, timestamps
     except Exception as e:
         logger.error(f"Error during data splitting: {e}")
         raise

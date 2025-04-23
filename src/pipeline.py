@@ -46,12 +46,10 @@ def run_pipeline():
             df = load_data(config)
 
             logger.info("Splitting data...")
-            X_train, X_val, X_test, y_train, y_val, y_test = split_data(df, target_column)
+            X_train, X_val, X_test, y_train, y_val, y_test, timestamps = split_data(df, target_column)
 
             logger.info("Preprocessing data...")
             X_train, X_val, X_test = preprocess_data(X_train, X_val, X_test)
-
-            # Check if the code below is correct
 
             logger.info("Training model...")
             model_params = config["models"][model_name]
