@@ -1,7 +1,5 @@
 import logging
-import os
 
-import joblib
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 
@@ -22,12 +20,6 @@ def train_model(X, y, model_name, model_params):
 
         model.fit(X, y)
         logger.info(f"Training completed for model: {model_name}")
-
-        # Save the model
-        os.makedirs("models", exist_ok=True)
-        model_path = f"models/{model_name}.pkl"
-        joblib.dump(model, model_path)
-        logger.info(f"Model saved at: {model_path}")
 
         return model
     except Exception as e:
