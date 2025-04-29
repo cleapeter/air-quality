@@ -57,8 +57,13 @@ def run_pipeline():
             model = train_model(X_train, y_train, model_name, model_params)
 
             logger.info("Evaluating model...")
-            metrics = evaluate_model(X_val, y_val, model)
+            metrics, predictions, scatter_plot, time_series_plot = evaluate_model(
+                X_val, y_val, timestamps["val"], model
+            )
             mlflow.log_metrics(metrics)
+            mlflow.log_artifact(predictions)
+            mlflow.log_artifact(scatter_plot)
+            mlflow.log_artifact(time_series_plot)
 
             input_example = pd.DataFrame(X_train.iloc[:1])
             signature = infer_signature(X_train, model.predict(X_train))
