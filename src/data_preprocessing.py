@@ -63,6 +63,7 @@ def standardize_data(X_train, X_val, X_test):
         # Save the scaler
         os.makedirs("./models", exist_ok=True)
         joblib.dump(scaler, "models/scaler.pkl")
+        logger.info("Scaler saved successfully.")
 
         logger.info("Data standardized successfully.")
         return X_train, X_val, X_test
@@ -81,6 +82,11 @@ def create_time_dummies(X_train, X_val, X_test):
         X_train_encoded = encoder.fit_transform(X_train[time_columns])
         X_val_encoded = encoder.transform(X_val[time_columns])
         X_test_encoded = encoder.transform(X_test[time_columns])
+
+        # Save the encoder
+        os.makedirs("./models", exist_ok=True)
+        joblib.dump(encoder, "models/encoder.pkl")
+        logger.info("Encoder saved successfully.")
 
         # Get the names of the encoded columns
         encoded_cols = encoder.get_feature_names_out(time_columns)
